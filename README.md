@@ -24,3 +24,28 @@ pip install numpy pandas
     ```
     Replace `5000` with other amount of points to test the code
 
+## Well, this is a failure
+
+What went well: 
+
+- Code is fairly well laid out and commented.
+- Works for the provided example - gives the correct answer
+- Requesting to spend more points that are available does not drive point totals negative. Consider whether or not this is an error condition that should be flagged.
+What could have gone better: 
+
+No unit tests.
+Validation
+Does not trap and handle non-numeric point input: "python main.py xxx" gives back a stack crawl.
+Can spend negative points to increase balance
+Negative transaction timestamps not taken into consideration - not spending the oldest points first.
+-200 DANNON should leave 100 points available for DANNON initially, but we can spend up to 300 before taking away from UNILEVER
+-200 point transaction for DANNON is incorrectly attributed to MILLER COORS after sufficient spending
+
+Consider this input:
+"payer","points","timestamp"
+"PAYER-A",100,"2023-01-01T15:00:00Z"
+"PAYER-A",-50,"2023-01-02T15:00:00Z"
+"PAYER-B",200,"2023-01-03T15:00:00Z"
+"PAYER-A",50,"2023-01-04T15:00:00Z"
+The correct result is {'PAYER-A': 50, 'PAYER-B': 175} but the submission returns {'PAYER-A': 25, 'PAYER-B': 200}.  
+There 100 - 50 points from the PAYER-A 01/01/2023 bucket available to spend first, leaving 25 to spend from PAYER-B. The 1/4/2023 PAYER-A points remain unspent.
